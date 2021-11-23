@@ -1,0 +1,7 @@
+pytest
+pylint-fail-under
+black
+ipykernel
+pytest-cov
+pytest-azurepipelines
+pylint-fail-under

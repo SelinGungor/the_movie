@@ -1,0 +1,69 @@
+stages:
+- stage: test
+  displayName: Run the unit tests in the project
+
+  jobs:
+  - job: unit_tests
+
+    steps:
+      - task: UsePythonVersion@0
+        displayName: 'Use Python 3.7'
+        inputs:
+          versionSpec: 3.7
+
+      - script: |
+          echo $(python --version)
+        displayName: "print python version"
+
+      - script: |
+          mkdir -p $(Build.StagingDirectory)/jdk
+        displayName: "Staging area for Java"
+
+      - script: |
+          mkdir -p $(Build.StagingDirectory)/spark
+          mkdir -p $(agent.toolsDirectory)/spark
+        displayName: "Staging area for Spark"
+
+      - script: |
+          echo "Download Java 1.8 from ${{ parameters.JAVA_SDK }}"
+          curl -LJO ${{ parameters.JAVA_SDK }}
+        displayName: "Download Java 1.8"
+        workingDirectory: $(Build.StagingDirectory)/jdk
+
+      - task: JavaToolInstaller@0
+        displayName: "Install Java 1.8"
+        inputs:
+          versionSpec: "8"
+          jdkArchitectureOption: x86
+          jdkFile: "$(Build.StagingDirectory)/jdk/${{ parameters.JAVA_SDK_NAME }}"
+          jdkSourceOption: "LocalDirectory"
+          jdkDestinationDirectory: "$(agent.toolsDirectory)/jdk8"
+
+      - script: |
+          echo "Downloading Spark ${{ parameters.SPARK_VERSION }}"
+          curl -k -L -o spark-${{ parameters.SPARK_VERSION }}.tgz https://archive.apache.org/dist/spark/spark-${{ parameters.SPARK_VERSION }}/spark-${{ parameters.SPARK_VERSION }}-bin-hadoop2.7.tgz
+        displayName: "Download Spark ${{ parameters.SPARK_VERSION }}"
+        workingDirectory: $(Build.StagingDirectory)/spark
+
+      - script: |
+          tar xzvf $(Build.StagingDirectory)/spark/spark-${{ parameters.SPARK_VERSION }}.tgz -C $(agent.toolsDirectory)/spark
+        displayName: "Extract Spark"
+
+      - script: |
+          pip install -r requirements.txt
+        displayName: "Install dependencies"
+
+      - script: |
+          pip install -r requirements-dev.txt
+        displayName: "Install development dependencies"
+
+      - script: |
+           pip install -Ue .
+        displayName: "Install the_movie"
+
+      - bash: |
+          pytest --disable-warnings --cov=src/ tests/ --cov-report=xml --cov-fail-under=80
+        displayName: "Execute the unit tests"
+        workingDirectory: $(System.DefaultWorkingDirectory)
+        continueOnError: false
+

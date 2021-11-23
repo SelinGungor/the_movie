@@ -1,0 +1,11 @@
+stages:
+- stage: deploy
+  displayName: Deploy the project
+
+  jobs:
+  - job: deploy
+
+    steps:
+      - script: |
+          echo "Executing deploying Script"
+        displayName: "Deploying the project"
