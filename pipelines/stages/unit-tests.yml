@@ -13,7 +13,7 @@ stages:
 
       - script: |
           echo $(python --version)
-        displayName: "print python version"
+        displayName: "Show Python version"
 
       - script: |
           mkdir -p $(Build.StagingDirectory)/jdk
@@ -62,7 +62,7 @@ stages:
         displayName: "Install the_movie"
 
       - bash: |
-          pytest --disable-warnings --cov=src/ tests/ --cov-report=xml --cov-fail-under=80
+          pytest --disable-warnings --cov=src/ tests/ --cov-report=xml --cov-fail-under=40
         displayName: "Execute the unit tests"
         workingDirectory: $(System.DefaultWorkingDirectory)
         continueOnError: false
