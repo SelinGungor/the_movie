@@ -4,6 +4,8 @@ stages:
 
   jobs:
   - job: unit_tests
+    variables:
+      PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
 
     steps:
       - task: UsePythonVersion@0
@@ -65,6 +67,15 @@ stages:
       - script: |
           tar xzvf $(Build.StagingDirectory)/spark/spark-${{ parameters.SPARK_VERSION }}.tgz -C $(agent.toolsDirectory)/spark
         displayName: "Extract Spark"
+
+      - task: Cache@2
+        inputs:
+          key: 'python | "$(Agent.OS)" | requirements-dev.txt'
+          restoreKeys: |
+            python | "$(Agent.OS)"
+            python
+          path: $(PIP_CACHE_DIR)
+        displayName: "Cache pip packages"
 
       - script: |
           pip install -r requirements.txt
