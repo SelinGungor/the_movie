@@ -7,7 +7,7 @@ My sample spark project with Azure Pipeline
 conda create -p ./venv python=3.7.0   
 pip install .
 
-# Run Jupyter
+# Run Jupyter Notebook
 
 pip install --user ipykernel   
 python -m ipykernel install --user --name=themovievenv

@@ -6,12 +6,11 @@ trigger:
       - feature/*
       - hotfix/*
 
-
 pool:
   vmImage: ubuntu-latest
 
 stages:
-- template: stages/tests.yml
+- template: stages/unit-tests.yml
   parameters:
     JAVA_VERSION: 8u282b08
     JAVA_SDK: https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u282-b08/OpenJDK8U-jdk_x64_linux_hotspot_8u282b08.tar.gz
