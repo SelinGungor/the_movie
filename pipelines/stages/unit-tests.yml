@@ -72,7 +72,7 @@ stages:
           restoreKeys: |
             python | "$(Agent.OS)"
             python
-          path: $(PIP_CACHE_DIR)
+          path: ${{ parameters.PIP_CACHE_DIR }}
           cacheHitVar: CACHE_RESTORED_PIP
         displayName: "Cache pip packages"
 
