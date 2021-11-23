@@ -79,11 +79,13 @@ stages:
             python | "$(Agent.OS)"
             python
           path: $(PIP_CACHE_DIR)
+          cacheHitVar: CACHE_RESTORED_PIP
         displayName: "Cache pip packages"
 
       - script: |
           pip install -r requirements.txt
         displayName: "Install dependencies"
+        condition: ne(variables.CACHE_RESTORED_PIP, 'true')
 
       - script: |
           pip install -r requirements-dev.txt
