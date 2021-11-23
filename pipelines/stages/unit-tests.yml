@@ -24,11 +24,27 @@ stages:
           mkdir -p $(agent.toolsDirectory)/spark
         displayName: "Staging area for Spark"
 
+      - task: Cache@2
+        displayName: "Use cache to load Java SDK"
+        inputs:
+          key: '"curl" | "staging/jdk" | "$(Agent.OS)" | "${{ parameters.JAVA_VERSION }}"'
+          path: $(Build.StagingDirectory)/jdk
+          cacheHitVar: CACHE_RESTORED_JAVA
+
+      - task: Cache@2
+        displayName: "Use cache to load Spark"
+        inputs:
+          key: '"curl" | "staging/spark" | "$(Agent.OS)" | "${{ parameters.SPARK_VERSION }}"'
+          path: $(Build.StagingDirectory)/spark
+          cacheHitVar: CACHE_RESTORED_SPARK
+
       - script: |
           echo "Download Java 1.8 from ${{ parameters.JAVA_SDK }}"
           curl -LJO ${{ parameters.JAVA_SDK }}
         displayName: "Download Java 1.8"
         workingDirectory: $(Build.StagingDirectory)/jdk
+        condition: ne(variables.CACHE_RESTORED_JAVA, 'true')
+
 
       - task: JavaToolInstaller@0
         displayName: "Install Java 1.8"
@@ -40,14 +56,25 @@ stages:
           jdkDestinationDirectory: "$(agent.toolsDirectory)/jdk8"
 
       - script: |
-          echo "Downloading Spark ${{ parameters.SPARK_VERSION }}"
+          echo "Downloading Spark ${{ parameters.SPARK_VERSION }}.."
           curl -k -L -o spark-${{ parameters.SPARK_VERSION }}.tgz https://archive.apache.org/dist/spark/spark-${{ parameters.SPARK_VERSION }}/spark-${{ parameters.SPARK_VERSION }}-bin-hadoop2.7.tgz
         displayName: "Download Spark ${{ parameters.SPARK_VERSION }}"
         workingDirectory: $(Build.StagingDirectory)/spark
+        condition: ne(variables.CACHE_RESTORED_SPARK, 'true')
 
       - script: |
           tar xzvf $(Build.StagingDirectory)/spark/spark-${{ parameters.SPARK_VERSION }}.tgz -C $(agent.toolsDirectory)/spark
         displayName: "Extract Spark"
+
+      - task: Cache@2
+        inputs:
+          key: 'python | "$(Agent.OS)" | requirements-dev.txt'
+          restoreKeys: |
+            python | "$(Agent.OS)"
+            python
+          path: $(PIP_CACHE_DIR)
+          cacheHitVar: CACHE_RESTORED_PIP
+        displayName: "Cache pip packages"
 
       - script: |
           pip install -r requirements.txt
