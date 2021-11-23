@@ -66,16 +66,6 @@ stages:
           tar xzvf $(Build.StagingDirectory)/spark/spark-${{ parameters.SPARK_VERSION }}.tgz -C $(agent.toolsDirectory)/spark
         displayName: "Extract Spark"
 
-      - task: Cache@2
-        inputs:
-          key: 'python | "$(Agent.OS)" | requirements-dev.txt'
-          restoreKeys: |
-            python | "$(Agent.OS)"
-            python
-          path: ${{ parameters.PIP_CACHE_DIR }}
-          cacheHitVar: CACHE_RESTORED_PIP
-        displayName: "Cache pip packages"
-
       - script: |
           pip install -r requirements.txt
         displayName: "Install dependencies"
