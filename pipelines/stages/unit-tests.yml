@@ -8,6 +8,10 @@ stages:
       PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
 
     steps:
+      - checkout: self
+        persistCredentials: true
+        fetchDepth: 1
+
       - task: UsePythonVersion@0
         displayName: 'Use Python 3.7'
         inputs:
@@ -70,7 +74,7 @@ stages:
 
       - task: Cache@2
         inputs:
-          key: 'python | "$(Agent.OS)" | requirements-dev.txt'
+          key: 'python | "$(Agent.OS)" | requirements.txt'
           restoreKeys: |
             python | "$(Agent.OS)"
             python

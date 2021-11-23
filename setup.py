@@ -13,16 +13,6 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     include_package_data=True,
-    install_requires=[
-	    "setuptools",
-	    "click",
-	    "numpy",
-	    "pyspark",
-	    "pandas",
-	    "scikit-learn",
-	    "pyhocon",
-	    "google-cloud-storage"
-    ],
     entry_points={"console_scripts": ["the_movie=the_movie.__main__:main"]},
 
 )

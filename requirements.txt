@@ -1,1 +1,8 @@
-.
+setuptools
+click
+numpy
+pyspark
+pandas
+scikit-learn
+pyhocon
+google-cloud-storage
