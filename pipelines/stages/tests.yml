@@ -62,7 +62,7 @@ stages:
         displayName: "Install the_movie"
 
       - bash: |
-          pytest --disable-warnings --cov=src/ tests/ --cov-report=xml --cov-fail-under=80
+          pytest --disable-warnings --cov=src/ tests/ --cov-report=xml --cov-fail-under=40
         displayName: "Execute the unit tests"
         workingDirectory: $(System.DefaultWorkingDirectory)
         continueOnError: false
